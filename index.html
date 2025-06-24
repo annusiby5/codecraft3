@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>To-Do List App</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: sans-serif;
+    }
+
+    body {
+      background-color: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      transition: background-color 0.3s;
+    }
+
+    .container {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .add-btn {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .add-btn:hover {
+      background-color: #0056b3;
+    }
+
+    .task {
+      display: flex;
+      justify-content: space-between;
+      background: #f8f9fa;
+      padding: 10px;
+      border-radius: 8px;
+      margin: 8px 0;
+      align-items: center;
+    }
+
+    .task.done span {
+      text-decoration: line-through;
+      color: gray;
+    }
+
+    .task-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .delete-btn, .done-btn {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .done-btn {
+      background-color: #28a745;
+    }
+
+    .delete-btn:hover {
+      background-color: #b02a37;
+    }
+
+    .done-btn:hover {
+      background-color: #1e7e34;
+    }
+
+    .mode-toggle {
+      margin-top: 1rem;
+      padding: 8px 12px;
+      background-color: #333;
+      color: white;
+    }
+
+    body.dark {
+      background-color: #121212;
+    }
+
+    body.dark .container {
+      background-color: #1f1f1f;
+      color: white;
+    }
+
+    body.dark input[type="text"] {
+      background-color: #333;
+      color: white;
+      border: 1px solid #555;
+    }
+
+    body.dark .task {
+      background-color: #2a2a2a;
+    }
+
+    body.dark .mode-toggle {
+      background-color: #ddd;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>To-Do List 📝</h1>
+    <div class="input-group">
+      <input type="text" id="taskInput" placeholder="Enter a new task">
+      <button class="add-btn" onclick="addTask()">Add</button>
+    </div>
+    <div id="taskList"></div>
+    <button class="mode-toggle" onclick="toggleMode()">Toggle Light/Dark Mode</button>
+  </div>
+
+  <script>
+    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+    function saveTasks() {
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+
+    function renderTasks() {
+      const list = document.getElementById('taskList');
+      list.innerHTML = '';
+      tasks.forEach((task, index) => {
+        const taskDiv = document.createElement('div');
+        taskDiv.className = 'task' + (task.done ? ' done' : '');
+        taskDiv.innerHTML = `
+          <span>${task.text}</span>
+          <div class="task-buttons">
+            <button class="done-btn" onclick="toggleDone(${index})">✔</button>
+            <button class="delete-btn" onclick="deleteTask(${index})">✖</button>
+          </div>
+        `;
+        list.appendChild(taskDiv);
+      });
+    }
+
+    function addTask() {
+      const input = document.getElementById('taskInput');
+      const text = input.value.trim();
+      if (text) {
+        tasks.push({ text, done: false });
+        input.value = '';
+        saveTasks();
+        renderTasks();
+      }
+    }
+
+    function deleteTask(index) {
+      tasks.splice(index, 1);
+      saveTasks();
+      renderTasks();
+    }
+
+    function toggleDone(index) {
+      tasks[index].done = !tasks[index].done;
+      saveTasks();
+      renderTasks();
+    }
+
+    function toggleMode() {
+      document.body.classList.toggle('dark');
+    }
+
+    renderTasks();
+  </script>
+</body>
+</html>
